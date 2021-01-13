@@ -149,7 +149,12 @@ def utility(board):     # TESTED - WORKING
     else: 
         return 0
 
-def min_value(board):   # not sure this is needed or whether can all be done in fun minimax
+def min_value(board):   
+    """
+    recursive function (back and forth to max_value simulating each turn)
+    returns the min value for board assuming each player
+    plays optimally
+    """
     if terminal(board): 
         return utility(board)
     v = math.inf
@@ -157,7 +162,12 @@ def min_value(board):   # not sure this is needed or whether can all be done in 
         v = min(v, max_value(result(board, action)))
     return v
 
-def max_value(board):   # not sure this is needed or whether can all be done in fun minimax
+def max_value(board):   
+    """
+    recursive function (back and forth to min_value simulating each turn)
+    returns the max value for board assuming each player
+    plays optimally
+    """
     if terminal(board): 
         return utility(board)
     v = -math.inf
@@ -165,12 +175,19 @@ def max_value(board):   # not sure this is needed or whether can all be done in 
         v = max(v, min_value(result(board, action)))
     return v
 
-
-def minimax(board):     # TBC
+def minimax(board):     
     """
     Returns the optimal action for the current player on the board.
     """
     if player(board) == 'X': 
-        max_value(board)
-    else: 
-        return min_value(board)
+        moves_reviewed = {}
+        for action in actions(board): 
+            # what is the score of the board if opposite player plays optimally
+            moves_reviewed[action] = min_value(result(board, action))
+        return max(moves_reviewed, key = moves_reviewed.get)
+
+    else: # player O
+        moves_reviewed = {}
+        for action in actions(board): 
+            moves_reviewed[action] = max_value(result(board, action))
+        return min(moves_reviewed, key = moves_reviewed.get)

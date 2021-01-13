@@ -1,4 +1,4 @@
-from tictactoe import player, actions, terminal, winner, utility
+from tictactoe import player, actions, terminal, winner, utility, minimax, min_value, max_value
 
 EMPTY = None
 
@@ -33,8 +33,8 @@ def result(board, action):
     board_copy[action[0]][action[1]] = player(board_copy)
     return board_copy
 
-board =     [['X', 'O', 'X'],
-            ['O', 'X', 'O'],
+board =     [['O', None, 'X'],
+            [None, 'X', None],
             ['O', 'X', None]]
 
-print(utility(board))
+print(minimax(board))
