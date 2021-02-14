@@ -12,7 +12,7 @@ understand what's going on.
 board = ttt.initial_state()
 
 # Initial moves
-moves = list(ttt.actions(board))
+moves = ttt.actions(board)
 
 # Used to store the winner
 w = None
@@ -29,7 +29,7 @@ while w is None:
     board = ttt.result(board, action)
     
     # List all possible moves
-    moves = list(ttt.actions(board))
+    moves = ttt.actions(board)
 
     # See if anyone has won
     w = ttt.winner(board)
