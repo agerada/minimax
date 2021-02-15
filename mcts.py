@@ -137,8 +137,5 @@ def mcts(board, iterations):
             if move.outcome == current_player: 
                 return move.action
 
-    # There must be no winning move if reached here
-    # Check if 
-
     return(max(root_state.children, key= lambda x: x.t).action)
 
