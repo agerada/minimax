@@ -3,6 +3,7 @@ import sys
 import time
 
 import tictactoe as ttt
+import mcts
 
 pygame.init()
 size = width, height = 600, 400
@@ -112,7 +113,9 @@ while True:
         if user != player and not game_over:
             if ai_turn:
                 time.sleep(0.5)
-                move = ttt.minimax(board)
+                #move = ttt.minimax(board)
+                sys.setrecursionlimit(1000)
+                move = mcts.mcts(board, 1000)
                 board = ttt.result(board, move)
                 ai_turn = False
             else:
