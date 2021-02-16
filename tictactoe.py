@@ -37,13 +37,13 @@ def player(board):      # TESTED - WORKING
 
 def actions(board):     # TESTED - WORKING
     """
-    Returns set of all possible actions (i, j) available on the board.
+    Returns list of all possible actions (i, j) available on the board.
     """
-    moves = set()
+    moves = []
     for row in range(3): 
         for cell in range(3): 
             if board[row][cell] == None: 
-                moves.add((row, cell))
+                moves.append((row, cell))
     return moves
 
 def result(board, action):  # TESTED - WORKING
