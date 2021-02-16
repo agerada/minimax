@@ -6,8 +6,13 @@ from random import randrange
 import sys
 
 class Node(): 
-    def __init__(self, action, parent, n = 0, t = 0):
+    def __init__(self, action, parent, board, n = 0, t = 0):
         self.action = action
+        self.original_state = board # board state pre-action
+        if not action: # initial state root node
+          self.resulting_state = None
+        else: 
+          self.resulting_state = result(board, action) # board state after action
         self.parent = parent
         self.children = []
         self.n = 0
@@ -39,6 +44,15 @@ class Node():
         else: 
             return False
     
+def search_node(state, node): 
+  if node.resulting_state == state: 
+    return node
+  for child in node.children: 
+    n = search_node(state, child)
+    if n: 
+      return n
+  return None
+
 def simulation(board, action, current_player): 
     """
     Play out random simulations until terminal state reached
@@ -112,7 +126,7 @@ def expansion(node, board, current_player):
     else: 
         # expand node
         for action in actions(board): 
-            child_node = Node(action, parent = node)
+            child_node = Node(action, parent = node, board = board)
             node.children.append(child_node)
 
 def mcts(board, iterations): 
@@ -122,13 +136,14 @@ def mcts(board, iterations):
     """
     current_player = player(board)
 
-    root_state = Node(action = None, parent = None)
-    for action in actions(board): 
-        node = Node(action, root_state)
-        root_state.children.append(node)
+    #print(root_state)
+    """nd = search_node(board, root_state)
+    if nd: 
+      root_state = nd"""
 
     for _ in range(iterations): 
         nd = selection(root_state)
+        #print(root_state.children)
         expansion(nd, board, current_player)
     
     # Check for winning moves
@@ -139,3 +154,9 @@ def mcts(board, iterations):
 
     return(max(root_state.children, key= lambda x: x.t).action)
 
+# Generate starting root Node 
+board = initial_state()
+root_state = Node(action = None, parent = None, board = board)
+for action in actions(board): 
+  node = Node(action, root_state, board)
+  root_state.children.append(node)
