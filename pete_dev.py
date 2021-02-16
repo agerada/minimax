@@ -1,42 +1,23 @@
 import tictactoe as ttt
 import numpy as np
 from numpy.random import randint
+from MCTS_Class import MCTS, Node
 
 """
-Some random players playing against each other, so Pete can
-understand what's going on.
+Dev script for MCTS class (playing as 'O'). 
 
 """
 
-# Initialise with a blank board
+mcts = MCTS()
+
+# Initialise with a blank board and let player 1 make a 
+# random move
 board = ttt.initial_state()
-
-# Initial moves
 moves = ttt.actions(board)
+n = randint(low=0, high=len(moves))
+action = moves[n]
+board = ttt.result(board, action)
 
-# Used to store the winner
-w = None
+# First iteration of MCTS 
+mcts.run_itt(Node(board))
 
-# Play until there's a winner
-while w is None:
-
-    # Pick a random move
-    n = randint(low=0, high=len(moves))
-    action = moves[n]
-
-    # Update the board (result automatically checks
-    # whose go it is)
-    board = ttt.result(board, action)
-    
-    # List all possible moves
-    moves = ttt.actions(board)
-
-    # See if anyone has won
-    w = ttt.winner(board)
-    
-    # Break if we've run out of moves
-    if len(moves) == 0:
-        break
-
-print('Winner is ', w, '\n')
-[print(i) for i in board]
