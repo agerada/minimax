@@ -19,5 +19,10 @@ action = moves[n]
 board = ttt.result(board, action)
 
 # First iteration of MCTS 
-mcts.run_itt(Node(board))
+initial_node = Node(board)
+mcts.run_itt(initial_node)
 
+# Check that the initial node (and its children are now in  
+# nodes_and_chldn  
+assert initial_node in mcts.nodes_and_chldn.keys()
+assert mcts.nodes_and_chldn[initial_node] == initial_node.find_children()
