@@ -6,7 +6,7 @@ board =     [['O', None, 'X'],      # test board state
 
 sys.setrecursionlimit(10000)
 
-ITERATIONS = 1000
+ITERATIONS = 2000
 
 for _ in range(10): 
     board =     [['O', None, 'X'],      # test board state

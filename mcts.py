@@ -6,7 +6,7 @@ from random import randrange
 import sys
 
 class Node(): 
-    def __init__(self, action, parent, n = 0, t = 0):
+    def __init__(self, action, parent, board, n = 0, t = 0):
         self.action = action
         self.parent = parent
         self.children = []
@@ -15,6 +15,12 @@ class Node():
         self.ucb1 = inf
         self.terminal = False
         self.outcome = None
+
+        self.original_state = board # board state pre-action
+        if not action: # initial state root node
+          self.resulting_state = None
+        else: 
+          self.resulting_state = result(board, action) # board state after action
     
     def score(self): 
         """
@@ -86,33 +92,42 @@ def selection(node):
             return selection(max_nodes[rand_num])
 
 def expansion(node, board, current_player): 
+        # check for terminal board (no sim or expansion needed) 
+    if terminal(node.resulting_state): 
+        if winner(node.resulting_state) == current_player: 
+            temp_t = 1
+            node.t += 1
+        elif winner(node.resulting_state) == None: 
+            temp_t = 1
+            node.t += 1
+        else: 
+            temp_t = -1
+            node.t += -1
+        node.n += 1
+        temp_node = node
+        while temp_node.parent: 
+            temp_node = temp_node.parent
+            temp_node.t += temp_t
+            temp_node.n += 1
+
     if node.n == 0: 
-        # check for terminal board (no sim needed) 
-        if terminal(board): 
-            if winner(board) == current_player: 
-                node.t += 1
-            elif winner(board) == None: 
-                node.t += 0
-            else: 
-                node.t -= 1
-            node.n += 1
 
         # conduct sim (non visited node)
-        else: 
-            sim_score = simulation(board, node.action, current_player)
+            sim_score = simulation(node.original_state, node.action, current_player)
             node.t += sim_score
             node.n += 1
 
         # backpropogation 
-        temp_node = node
-        while temp_node.parent: 
-            temp_node = temp_node.parent
-            temp_node.t += sim_score
-            temp_node.n += 1
-    else: 
+            temp_node = node
+            while temp_node.parent: 
+                temp_node = temp_node.parent
+                temp_node.t += sim_score
+                temp_node.n += 1
+                
+    elif not terminal(node.resulting_state): 
         # expand node
-        for action in actions(board): 
-            child_node = Node(action, parent = node)
+        for action in actions(node.resulting_state): 
+            child_node = Node(action, parent = node, board = node.resulting_state)
             node.children.append(child_node)
 
 def mcts(board, iterations): 
@@ -122,9 +137,9 @@ def mcts(board, iterations):
     """
     current_player = player(board)
 
-    root_state = Node(action = None, parent = None)
+    root_state = Node(action = None, parent = None, board = board)
     for action in actions(board): 
-        node = Node(action, root_state)
+        node = Node(action, root_state, board)
         root_state.children.append(node)
 
     for _ in range(iterations): 
