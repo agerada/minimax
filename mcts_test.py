@@ -6,51 +6,52 @@ board =     [['O', None, 'X'],      # test board state
 
 sys.setrecursionlimit(10000)
 
-ITERATIONS = 2000
+ITERATIONS = 1000
 
-for _ in range(10): 
-    board =     [['O', None, 'X'],      # test board state
-                [None, None, None],
-                [None, 'X', None]]
-    board = initial_state()
+def quick_compare_mcts_minimax(runs = 10): 
+    print('MCTS: ')
+    print('\t(MCTS is player X)')
+    print('\t(Minimax is player O)')
+    for _ in range(runs): 
+        board = initial_state()
+        # MCTS is X and makes first move
 
-    # MCTS is X and makes first move
+        board = result(board, mcts(board, ITERATIONS))
 
-    board = result(board, mcts(board, ITERATIONS))
+        # Play until there's a winner
+        while not terminal(board):
 
-    # Play until there's a winner
-    while not terminal(board):
+            # Make a move
+            if player(board) == 'X': 
+                board = result(board, mcts(board, ITERATIONS))
+            else: 
+                board = result(board, minimax(board))
 
-        # Make a move
-        if player(board) == 'X': 
-            board = result(board, mcts(board, ITERATIONS))
+        outcome = winner(board)
+
+        if outcome == 'X': 
+            print('Player X is winner')
+        elif outcome == 'O': 
+            print('Player O is winner')
         else: 
+            print('Tie')
+
+    print('Minimax: ')
+    print('\t(MCTS is player X)')
+    print('\t(Minimax is player O)')
+    for i in range(runs): 
+        board = initial_state()
+
+        while not terminal(board): 
             board = result(board, minimax(board))
 
-    outcome = winner(board)
+        outcome = winner(board)
 
-    if outcome == 'X': 
-        print('Player X is winner')
-    elif outcome == 'O': 
-        print('Player O is winner')
-    else: 
-        print('Tie')
-
-"""
-print('Minimax: ')
-
-for i in range(2): 
-    board = initial_state()
-
-    while not terminal(board): 
-        board = result(board, minimax(board))
-
-    outcome = winner(board)
-
-    if outcome == 'X': 
-        print('Player X is winner')
-    elif outcome == 'O': 
-        print('Player O is winner')
-    else: 
-        print('Tie')
-"""
+        if outcome == 'X': 
+            print('Player X is winner')
+        elif outcome == 'O': 
+            print('Player O is winner')
+        else: 
+            print('Tie')
+    
+quick_compare_mcts_minimax()
