@@ -35,9 +35,13 @@ def random_sim(node):
             i = randint(low = len(children))
             node = children[i]
             children = mcts.find_children(node)
+            
+            if children is None:
+                # If no more children then return the leaf node
+                return node
 
-        if children is None:
-            # If no more children then return the reward
+def find_reward(node):
+
             if node == 3:
                 reward = 1
             if node == 4:
@@ -49,11 +53,10 @@ def random_sim(node):
 
             return reward
 
-
-
 # Assign rules of the game to mcts instance
 mcts.find_children = find_children
 mcts.random_sim = random_sim
+mcts.find_reward = find_reward
 
 # Fix random seed so that we run same test each time
 np.random.seed(42)
@@ -78,8 +81,10 @@ mcts.run_itt(node=0)
 assert mcts.nodes_and_chldn == {0: [1, 2], 1: [3, 4], 2: [5, 6]}
 
 # On the fourth iteration we should pick the node with the largest 
-# uct value and then rollout from one of its children.
+# uct value and then rollout from one of its children. We are now hitting
+# leaf nodes so the dictionary of visited nodes should remain the same.
 mcts.run_itt(node=0)
+assert mcts.nodes_and_chldn == {0: [1, 2], 1: [3, 4], 2: [5, 6]}
 
 
 

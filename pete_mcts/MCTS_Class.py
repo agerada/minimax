@@ -27,11 +27,17 @@ class MCTS():
     @abstractmethod
     def random_sim(self, node):
         """ Simulate randomly from current state to the end
-            of the game before then reporting the reward.
+            of the game.
 
         """
         pass
 
+    @abstractmethod
+    def find_reward(self, node):
+        """ Return the reward associated with a leaf node.
+
+        """
+        pass
 
     def run_itt(self, node):
         """ Runs a MCTS iteration starting from state defined by node.
@@ -71,10 +77,14 @@ class MCTS():
                     i = np.where(uct_values == np.max(uct_values))[0][0]
                     node = children[i]
 
-                if self.is_leaf(node):
-                    # If this is a terminal node then we don't need to 
-                    # add it nodes visited and do a rollout etc. 
-                    pass
+                if self.find_children(node) is None:
+                    # If this is a terminal node then we don't need to
+                    # add it nodes visited and do a rollout etc.
+
+                    reward = self.find_reward(node)
+                    self.backprop(path, reward)
+                    
+                    break
 
             if not visited:
                 # If we haven't visited the node as a parent before then we
@@ -88,7 +98,8 @@ class MCTS():
                 self.N[node] = 0
                 self.rewards[node] = 0
 
-                reward = self.random_sim(node)
+                node = self.random_sim(node)
+                reward = self.find_reward(node)
                 self.backprop(path, reward)
 
                 break
