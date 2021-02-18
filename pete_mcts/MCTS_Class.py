@@ -35,7 +35,7 @@ class MCTS():
         """
 
         # Check to see if we have visited state before
-        visited = self.visited_before(node)
+        visited = node in self.nodes_and_chldn
 
         # If we have visited the node before... (need to finish)
         if visited:
@@ -45,28 +45,6 @@ class MCTS():
         # here to the end of the game
         if not visited:
             reward = self.rollout(node)
-
-    def visited_before(self, node):
-        """ Returns true of node has been visited before (as parent)
-            and false otherwise. If node hasn't been visited before
-            then we find it's children and add it to nodes_and_chldn.
-        """
-
-        if node in self.nodes_and_chldn:
-            return True
-        else:
-            self.find_children(node)
-            return False
-
-
-    def find_children(self, node):
-        """ Finds children of node, and adds node to the nodes_and_chldn dictionary.
-
-        """
-
-        children = node.find_children()
-        self.nodes_and_chldn[node] = children
-
 
     def rollout(self, node):
         """ Randomly plays from the state defined by node until
