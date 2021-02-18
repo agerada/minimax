@@ -4,6 +4,13 @@ from numpy.random import randint
 
 class MCTS():
 
+    """
+    Description
+    -----------
+        A base class for Monte Carlo tree search algorithm.
+
+    """
+
     def __init__(self):
 
         # Dictionary with node states as keys and children as items.
@@ -19,28 +26,46 @@ class MCTS():
 
     @abstractmethod
     def find_children(self, node):
-        """ Find and return all child states of the node.
-
         """
+        Description
+        ------------
+            Finds children of node and returns as a list. Is equal to
+            'None' if the node has no children.
+        """
+
         pass
 
     @abstractmethod
     def random_sim(self, node):
-        """ Simulate randomly from current state to the end
-            of the game.
+        """
+        Description
+        -----------
+            Simulate randomly from current state, node,  to the end
+            of the game. Returns the leaf node where it eventually
+            finishes the game.
 
         """
         pass
 
     @abstractmethod
     def find_reward(self, node):
-        """ Return the reward associated with a leaf node.
+        """
+        Description
+        -----------
+            Returns the reward associated with a leaf node.
 
         """
         pass
 
     def run_itt(self, node):
-        """ Runs a MCTS iteration starting from state defined by node.
+        """
+        Description
+        -----------
+            Runs a MCTS iteration starting from state defined by node.
+
+        Parameters
+        ----------
+            node : current state
 
         """
 
@@ -105,8 +130,23 @@ class MCTS():
                 break
 
     def backprop(self, path, reward, leaf):
-        """ path is the path we took the the leaf node, node represents
-            the leaf node itself
+        """
+        Description
+        -----------
+            Takes the result of a rollout and back-propagates it
+            back through the network.
+
+        Parameters
+        ----------
+            path : list of nodes showing the route that we took to
+                the leaf node. Note that it does not include the
+                leaf node itself.
+
+            reward : the reward associated with this particular
+                rollout.
+
+            leaf : the leaf node i.e. where we finally ended up at
+                the end of the game.
 
         """
 
@@ -127,6 +167,25 @@ class MCTS():
         self.rewards[leaf] += reward
 
     def find_uct_values(self, parent, children):
+        """
+        Description
+        -----------
+            Find the utc values associated with a list of children nodes.
+            We use this to help us choose which node to move to next (if
+            all children have already been visited before).
+
+        Parameters
+        ----------
+            parent : parent of all the child nodes that we're considering
+                moving to
+
+            children : list of child nodes
+
+        Returns
+        -------
+            utc : numpy array of utc values associated with each node in
+                children
+        """
 
         n_parent = self.N[parent]
         uct = np.array([])
@@ -147,6 +206,23 @@ class MCTS():
         return uct
 
     def choose_move(self, node):
+        """
+        Description
+        -----------
+            Chooses the next move that would maximise the estimated
+            expected reward.
+
+        Parameters
+        ----------
+            node : current state
+
+        Returns
+        -------
+            best_node : the child node that has the maximum estimated
+                expected reward.
+
+        """
+
         children = self.find_children(node)
         EX = np.array([])
         for node in children:
