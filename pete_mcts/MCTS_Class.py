@@ -51,7 +51,8 @@ class MCTS():
             if visited:
                 # If we have visited the node before then either move on to
                 # (random) unvisited child or pick next node according to
-                # the UCT values of the children.
+                # the UCT values of the children. In other words, we move
+                # down one layer in the tree.
 
                 # Create list of children we haven't visited
                 children = self.find_children(node)
@@ -69,6 +70,11 @@ class MCTS():
                     uct_values = self.find_uct_values(node, children)
                     i = np.where(uct_values == np.max(uct_values))[0][0]
                     node = children[i]
+
+                if self.is_leaf(node):
+                    # If this is a terminal node then we don't need to 
+                    # add it nodes visited and do a rollout etc. 
+                    pass
 
             if not visited:
                 # If we haven't visited the node as a parent before then we
