@@ -13,7 +13,7 @@ class MCTS():
 
         # Dictionary with node states as keys and rewards as items.
         self.rewards = ()
-        
+
 
     @abstractmethod
     def find_children(self, node):
@@ -21,15 +21,15 @@ class MCTS():
 
         """
         pass
-        
+
     @abstractmethod
     def random_sim(self, node):
         """ Simulate randomly from current state to the end
             of the game before then reporting the reward.
-        
+
         """
         pass
-        
+
 
     def run_itt(self, node):
         """ Runs a MCTS iteration starting from state defined by node.
@@ -54,17 +54,20 @@ class MCTS():
             # its children, add to the dictionary of visited nodes and
             # perform a rollout.
 
-            children = node.find_children()
+            children = self.find_children(node)
             self.nodes_and_chldn[node] = children
-            self.rollout(node)
-            self.backprop(node)
+            reward = self.random_sim(node)
 
-    def rollout(self, node):
-        """ Randomly plays from the state defined by node until
-        the end of the game, returning the final outcome.
+            ##self.backprop(node)
 
-        """
 
-        reward = node.random_sim()
-        
-        return reward 
+
+
+
+
+
+
+
+
+
+
