@@ -14,6 +14,14 @@ class Node():
 
         """
         pass
+        
+    @abstractmethod
+    def random_sim(self):
+        """ Simulate randomly from current state to the end
+            of the game. 
+        
+        """
+        pass
 
 
 class MCTS():
@@ -63,42 +71,7 @@ class MCTS():
 
         """
 
-        # Available moves from this point
-        board = node.board
-        moves = ttt.actions(board)
-
-        # Used to store the winner
-        w = None
-
-        # Play until there's a winner
-        while w is None:
-
-            # Pick a random move
-            n = randint(low=0, high=len(moves))
-            action = moves[n]
-
-            # Update the board (result automatically checks
-            # whose go it is)
-            board = ttt.result(board, action)
-
-            # List all possible moves
-            moves = ttt.actions(board)
-
-            # See if anyone has won
-            w = ttt.winner(board)
-
-            # Break if we've run out of moves
-            if len(moves) == 0:
-                break
-
-        if w is 'O':
-            reward = 2
-        elif w is None:
-            reward = 1
-        elif w is 'X':
-            reward = 0
-
-        return reward
+        pass
 
 
 
