@@ -10,11 +10,11 @@ class Node():
 
     @abstractmethod
     def find_children(self):
-        """ Find and return all child states of the node. 
-            
+        """ Find and return all child states of the node.
+
         """
         pass
-        
+
 
 class MCTS():
 
@@ -34,17 +34,28 @@ class MCTS():
 
         """
 
+        # Start 'path', the list of nodes we visit before finding a
+        # parent node that we haven't visited before.
+        path = []
+        path.append(node)
+
         # Check to see if we have visited state before
         visited = node in self.nodes_and_chldn
 
-        # If we have visited the node before... (need to finish)
         if visited:
+            # If we have visited the node before...
+            ##(need to finish)
             pass
 
-        # If we haven't visited the node before, then rollout from
-        # here to the end of the game
         if not visited:
-            reward = self.rollout(node)
+            # If we haven't visited the node as a parent before then we
+            # its children, add to the dictionary of visited nodes and
+            # perform a rollout.
+
+            children = node.find_children()
+            self.nodes_and_chldn[node] = children
+            self.rollout(node)
+            self.backprop(node)
 
     def rollout(self, node):
         """ Randomly plays from the state defined by node until
