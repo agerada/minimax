@@ -86,5 +86,12 @@ assert mcts.nodes_and_chldn == {0: [1, 2], 1: [3, 4], 2: [5, 6]}
 mcts.run_itt(node=0)
 assert mcts.nodes_and_chldn == {0: [1, 2], 1: [3, 4], 2: [5, 6]}
 
+# Now if we run it lots of times, the expected reward associated with 
+# node 1 should converge to 1.5
+for i in range(1000):
+    mcts.run_itt(node=0)
+assert np.allclose(mcts.rewards[1] / mcts.N[1], 1.5, atol=0.01)
+
+
 
 
