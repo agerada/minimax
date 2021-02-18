@@ -4,7 +4,7 @@ import pickle, sys, os
 
 sys.setrecursionlimit(1000)
 
-ITERATIONS = 100
+ITERATIONS = 50
 RESET_KNOWLEDGE = False
 
 if RESET_KNOWLEDGE: 
@@ -22,7 +22,7 @@ else:
         knowledge = pickle.load(input_knowledge)
 
 
-def quick_compare_mcts_minimax(runs = 1, knowledge = knowledge, test_minimax = False): 
+def quick_compare_mcts_minimax(runs = 30, knowledge = knowledge, test_minimax = False): 
     print('MCTS: ')
     print('\t(MCTS is player X)')
     print('\t(Minimax is player O)')
