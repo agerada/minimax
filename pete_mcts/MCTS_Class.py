@@ -22,6 +22,21 @@ class Node():
         
         """
         pass
+        
+    @abstractmethod
+    def is_terminal(self):
+        """ Returns true if this is a terminal ('leaf') node. 
+        
+        """
+        pass
+        
+    @abstractmethod
+    def reward(self):
+        """ If a terminal node, returns the corresponding reward.
+        
+        """
+        
+        pass
 
 
 class MCTS():
