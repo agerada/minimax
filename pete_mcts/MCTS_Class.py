@@ -1,28 +1,5 @@
 import numpy as np
-from numpy.random import randint
 from abc import ABC, abstractmethod
-
-
-class Node():
-
-    def __init__(self, state):
-        self.state = state
-
-    @abstractmethod
-    def find_children(self):
-        """ Find and return all child states of the node.
-
-        """
-        pass
-        
-    @abstractmethod
-    def random_sim(self):
-        """ Simulate randomly from current state to the end
-            of the game before then reporting the reward.
-        
-        """
-        pass
-
 
 class MCTS():
 
@@ -36,6 +13,23 @@ class MCTS():
 
         # Dictionary with node states as keys and rewards as items.
         self.rewards = ()
+        
+
+    @abstractmethod
+    def find_children(self, node):
+        """ Find and return all child states of the node.
+
+        """
+        pass
+        
+    @abstractmethod
+    def random_sim(self, node):
+        """ Simulate randomly from current state to the end
+            of the game before then reporting the reward.
+        
+        """
+        pass
+        
 
     def run_itt(self, node):
         """ Runs a MCTS iteration starting from state defined by node.
