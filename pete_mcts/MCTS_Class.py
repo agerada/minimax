@@ -11,8 +11,9 @@ class MCTS():
         # Dictionary with node states as keys and no. visits as items.
         self.N = dict()
 
-        # Dictionary with node states as keys and rewards as items.
-        self.rewards = ()
+        # Dictionary with node states as keys and rewards below said
+        # node as items.
+        self.rewards = dict()
 
 
     @abstractmethod
@@ -52,15 +53,22 @@ class MCTS():
         if not visited:
             # If we haven't visited the node as a parent before then we
             # its children, add to the dictionary of visited nodes and
-            # perform a rollout.
+            # perform a rollout. Also add it to the dictionaries that
+            # record no. times visited and rewards.
 
             children = self.find_children(node)
+
             self.nodes_and_chldn[node] = children
+            self.N[node] = 0
+            self.rewards[node] = 0
+
             reward = self.random_sim(node)
+            self.backprop(path, reward)
 
-            ##self.backprop(node)
-
-
+    def backprop(self, path, reward):
+        for node in path:
+            self.N[node] += 1
+            self.rewards[node] += reward
 
 
 

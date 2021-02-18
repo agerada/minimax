@@ -55,8 +55,12 @@ def random_sim(node):
 mcts.find_children = find_children
 mcts.random_sim = random_sim
 
-# Run first iteration and check that the nodes and children dictionary
-# is correct. 
+# Fix random seed so that we run the same test each time 
+np.random.seed(42)
+
+# Run first iteration and check that the nodes dictionaries are
+# what we would expect. 
 mcts.run_itt(node=0)
 assert mcts.nodes_and_chldn == dict({0 : [1,2]})
-
+assert mcts.N == dict({0 : 1})
+assert mcts.rewards == dict({0 : 2})
