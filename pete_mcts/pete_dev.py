@@ -66,8 +66,14 @@ assert mcts.N == dict({0 : 1})
 assert mcts.rewards == dict({0 : 2})
 
 # On the second iteration (with random seed fixed) it should rollout
-# from node 1.
+# from node 1. This means that nodes 0 and 1 have been visited twice and
+# once respectively. 
 mcts.run_itt(node=0)
 assert mcts.nodes_and_chldn == {0: [1, 2], 1: [3, 4]}
+assert mcts.N == {0: 2, 1: 1}
 
+# On the third iteration (with random seed fixed) rollout has to be conducted
+# from node 2. 
+mcts.run_itt(node=0)
+assert mcts.nodes_and_chldn == {0: [1, 2], 1: [3, 4], 2: [5, 6]}
 
