@@ -1,9 +1,7 @@
-from numpy.lib.polynomial import roots
 from tictactoe import initial_state, player, actions, result, winner, terminal, utility, minimax
 from numpy import log 
 from math import sqrt, inf
 from random import randrange
-import sys
 
 class Node(): 
     def __init__(self, action, parent, board, n = 0, t = 0):

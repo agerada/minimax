@@ -1,26 +1,35 @@
-from mcts import *
+from mcts import mcts, Knowledge
+from tictactoe import initial_state, result, terminal, winner, minimax, player
+import pickle, sys, os
 
-board =     [['O', None, 'X'],      # test board state
-            [None, 'X', None],
-            ['O', 'X', None]]
-
-sys.setrecursionlimit(10000)
+sys.setrecursionlimit(1000)
 
 ITERATIONS = 100
+RESET_KNOWLEDGE = False
 
-knowledge = Knowledge(ITERATIONS, 'X')
+if RESET_KNOWLEDGE: 
+    # generate base knowledge for X
+    print('Resetting knowledge..')
+    knowledge = Knowledge(ITERATIONS, 'X')
 
-def quick_compare_mcts_minimax(runs = 10, knowledge = knowledge): 
+if not os.path.exists('knowledge.pkl'): 
+    # generate base knowledge for X
+    print('No previous knowledge found, generating base knowledge..')
+    knowledge = Knowledge(ITERATIONS, 'X')
+else: 
+    with open('knowledge.pkl', 'rb') as input_knowledge: 
+        print("Loading knowledge from knowledge.pkl..")
+        knowledge = pickle.load(input_knowledge)
+
+
+def quick_compare_mcts_minimax(runs = 1, knowledge = knowledge, test_minimax = False): 
     print('MCTS: ')
     print('\t(MCTS is player X)')
     print('\t(Minimax is player O)')
     for _ in range(runs): 
         board = initial_state()
 
-        # generate base knowledge for X
-
         # MCTS is X and makes first move
-
         board = result(board, mcts(board, ITERATIONS, knowledge))
 
         # Play until there's a winner
@@ -41,20 +50,27 @@ def quick_compare_mcts_minimax(runs = 10, knowledge = knowledge):
         else: 
             print('Tie')
 
-    print('Minimax only: ')
-    for _ in range(runs): 
-        board = initial_state()
+    with open('knowledge.pkl', 'wb') as output_knowledge: 
+        print("Saving knowledge to knowledge.pkl..")
+        pickle.dump(knowledge, output_knowledge, pickle.HIGHEST_PROTOCOL)
+        
+    if not test_minimax: 
+        return
+    else: 
+        print('Minimax only: ')
+        for _ in range(runs): 
+            board = initial_state()
 
-        while not terminal(board): 
-            board = result(board, minimax(board))
+            while not terminal(board): 
+                board = result(board, minimax(board))
 
-        outcome = winner(board)
+            outcome = winner(board)
 
-        if outcome == 'X': 
-            print('Player X is winner')
-        elif outcome == 'O': 
-            print('Player O is winner')
-        else: 
-            print('Tie')
+            if outcome == 'X': 
+                print('Player X is winner')
+            elif outcome == 'O': 
+                print('Player O is winner')
+            else: 
+                print('Tie')
     
 quick_compare_mcts_minimax()
