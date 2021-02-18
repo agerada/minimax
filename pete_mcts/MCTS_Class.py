@@ -82,8 +82,8 @@ class MCTS():
                     # add it nodes visited and do a rollout etc.
 
                     reward = self.find_reward(node)
-                    self.backprop(path, reward)
-                    
+                    self.backprop(path, reward, node)
+
                     break
 
             if not visited:
@@ -98,16 +98,33 @@ class MCTS():
                 self.N[node] = 0
                 self.rewards[node] = 0
 
-                node = self.random_sim(node)
-                reward = self.find_reward(node)
-                self.backprop(path, reward)
+                leaf = self.random_sim(node)
+                reward = self.find_reward(leaf)
+                self.backprop(path, reward, leaf)
 
                 break
 
-    def backprop(self, path, reward):
+    def backprop(self, path, reward, leaf):
+        """ path is the path we took the the leaf node, node represents
+            the leaf node itself
+
+        """
+
+        # Back propagate the nodes in the path
         for node in path:
             self.N[node] += 1
             self.rewards[node] += reward
+
+
+        if leaf not in self.N:
+            # If we haven't seen this leaf node before, add it to
+            # the N and rewards dictionaries
+            self.N[leaf] = 0
+            self.rewards[leaf] = 0
+
+        # Update no. times visited and reward for leaf node
+        self.N[leaf] += 1
+        self.rewards[leaf] += reward
 
     def find_uct_values(self, parent, children):
 
@@ -129,12 +146,15 @@ class MCTS():
                             EX + 2 * np.sqrt(np.log(n_parent) / n_child))
         return uct
 
+    def choose_move(self, node):
+        children = self.find_children(node)
+        EX = np.array([])
+        for node in children:
+            n_child = self.N[node]
+            reward = self.rewards[node]
+            EX = np.append(EX, reward / n_child)
 
+        i = np.where(EX == np.max(EX))[0][0]
+        best_node = children[i]
 
-
-
-
-
-
-
-
+        return best_node

@@ -65,15 +65,15 @@ np.random.seed(42)
 # what we would expect.
 mcts.run_itt(node=0)
 assert mcts.nodes_and_chldn == dict({0 : [1,2]})
-assert mcts.N == dict({0 : 1})
-assert mcts.rewards == dict({0 : 2})
+assert mcts.N == dict({0 : 1, 4 : 1})
+assert mcts.rewards == dict({0 : 2, 4 : 2})
 
 # On the second iteration (with random seed fixed) it should rollout
 # from node 1. This means that nodes 0 and 1 have been visited twice and
 # once respectively. 
 mcts.run_itt(node=0)
 assert mcts.nodes_and_chldn == {0: [1, 2], 1: [3, 4]}
-assert mcts.N == {0: 2, 1: 1}
+assert mcts.N == {0: 2, 4: 1, 1: 1, 3: 1}
 
 # On the third iteration (with random seed fixed) rollout has to be conducted
 # from node 2. 
@@ -92,6 +92,12 @@ for i in range(1000):
     mcts.run_itt(node=0)
 assert np.allclose(mcts.rewards[1] / mcts.N[1], 1.5, atol=0.01)
 
+# Check that it chooses node 1 on the first move
+best_node = mcts.choose_move(node=0)
+assert best_node == 1
 
-
-
+# Check that it chooses node 4 on the second move
+for i in range(1000):
+    mcts.run_itt(node=best_node)
+best_node = mcts.choose_move(node=best_node)
+assert best_node == 4
