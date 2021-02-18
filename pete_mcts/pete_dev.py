@@ -55,12 +55,19 @@ def random_sim(node):
 mcts.find_children = find_children
 mcts.random_sim = random_sim
 
-# Fix random seed so that we run the same test each time 
+# Fix random seed so that we run same test each time
 np.random.seed(42)
 
 # Run first iteration and check that the nodes dictionaries are
-# what we would expect. 
+# what we would expect.
 mcts.run_itt(node=0)
 assert mcts.nodes_and_chldn == dict({0 : [1,2]})
 assert mcts.N == dict({0 : 1})
 assert mcts.rewards == dict({0 : 2})
+
+# On the second iteration (with random seed fixed) it should rollout
+# from node 1.
+mcts.run_itt(node=0)
+assert mcts.nodes_and_chldn == {0: [1, 2], 1: [3, 4]}
+
+
