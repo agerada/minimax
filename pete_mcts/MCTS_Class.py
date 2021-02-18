@@ -1,19 +1,20 @@
-import tictactoe as ttt
 import numpy as np
 from numpy.random import randint
+from abc import ABC, abstractmethod
 
 
 class Node():
 
-    def __init__(self, board):
-        self.board = board
+    def __init__(self, state):
+        self.state = state
 
+    @abstractmethod
     def find_children(self):
-        moves = ttt.actions(self.board)
-        children = []
-        for m in moves:
-            children.append(ttt.result(self.board, m))
-        return children
+        """ Find and return all child states of the node. 
+            
+        """
+        pass
+        
 
 class MCTS():
 
