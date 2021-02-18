@@ -6,24 +6,29 @@ board =     [['O', None, 'X'],      # test board state
 
 sys.setrecursionlimit(10000)
 
-ITERATIONS = 1000
+ITERATIONS = 100
 
-def quick_compare_mcts_minimax(runs = 10): 
+knowledge = Knowledge(ITERATIONS, 'X')
+
+def quick_compare_mcts_minimax(runs = 10, knowledge = knowledge): 
     print('MCTS: ')
     print('\t(MCTS is player X)')
     print('\t(Minimax is player O)')
     for _ in range(runs): 
         board = initial_state()
+
+        # generate base knowledge for X
+
         # MCTS is X and makes first move
 
-        board = result(board, mcts(board, ITERATIONS))
+        board = result(board, mcts(board, ITERATIONS, knowledge))
 
         # Play until there's a winner
         while not terminal(board):
 
             # Make a move
             if player(board) == 'X': 
-                board = result(board, mcts(board, ITERATIONS))
+                board = result(board, mcts(board, ITERATIONS, knowledge))
             else: 
                 board = result(board, minimax(board))
 
@@ -36,10 +41,8 @@ def quick_compare_mcts_minimax(runs = 10):
         else: 
             print('Tie')
 
-    print('Minimax: ')
-    print('\t(MCTS is player X)')
-    print('\t(Minimax is player O)')
-    for i in range(runs): 
+    print('Minimax only: ')
+    for _ in range(runs): 
         board = initial_state()
 
         while not terminal(board): 

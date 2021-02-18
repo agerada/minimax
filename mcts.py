@@ -45,6 +45,20 @@ class Node():
         else: 
             return False
     
+class Knowledge(): 
+    def __init__(self, iterations, player): 
+        board = initial_state()
+
+        self.player = player
+        self.root_state = Node(action = None, parent = None, board = board)
+
+        for action in actions(board): 
+            node = Node(action, self.root_state, board)
+            self.root_state.children.append(node)
+        for _ in range(iterations): 
+            nd = selection(self.root_state)
+            expansion(nd, player)
+
 def simulation(board, action, current_player): 
     """
     Play out random simulations until terminal state reached
@@ -91,7 +105,7 @@ def selection(node):
             rand_num = randrange(0,len(max_nodes))
             return selection(max_nodes[rand_num])
 
-def expansion(node, board, current_player): 
+def expansion(node, current_player): 
         # check for terminal board (no sim or expansion needed) 
     if terminal(node.resulting_state): 
         if winner(node.resulting_state) == current_player: 
@@ -130,27 +144,43 @@ def expansion(node, board, current_player):
             child_node = Node(action, parent = node, board = node.resulting_state)
             node.children.append(child_node)
 
-def mcts(board, iterations): 
+def mcts(board, iterations, knowledge): 
     """
     Return optimal move using MCTS algorithm
     Iterations is the number of times to run MCTS
     """
+
     current_player = player(board)
 
-    root_state = Node(action = None, parent = None, board = board)
-    for action in actions(board): 
-        node = Node(action, root_state, board)
-        root_state.children.append(node)
+    if board == initial_state(): 
+        # if blank board, then start at root node
+        # no need to select and expand node as already done at __init__
+        # of knowledge
+        nd = knowledge.root_state
+    else: 
+        # otherwise find working node by searching through states in tree
+        nd = search_node(board, knowledge.root_state)
+        if not nd: 
+            raise NotImplementedError # don't know how to deal with unseen moves yet
+        for _ in range(iterations): 
+            temp_selection_node = selection(nd)
+            expansion(temp_selection_node, current_player)
 
-    for _ in range(iterations): 
-        nd = selection(root_state)
-        expansion(nd, board, current_player)
-    
     # Check for winning moves
-    for move in root_state.children: 
+    for move in nd.children: 
         if move.is_terminal_move(board): 
             if move.outcome == current_player: 
                 return move.action
 
-    return(max(root_state.children, key= lambda x: x.t).action)
+    # Find action with highest t
+    max_action = max(nd.children, key= lambda x: x.t).action
+    return max_action
 
+def search_node(state, node): 
+  if node.resulting_state == state: 
+    return node
+  for child in node.children: 
+    n = search_node(state, child)
+    if n: 
+      return n
+  return None
