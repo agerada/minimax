@@ -18,24 +18,9 @@ class Node():
     @abstractmethod
     def random_sim(self):
         """ Simulate randomly from current state to the end
-            of the game. 
+            of the game before then reporting the reward.
         
         """
-        pass
-        
-    @abstractmethod
-    def is_terminal(self):
-        """ Returns true if this is a terminal ('leaf') node. 
-        
-        """
-        pass
-        
-    @abstractmethod
-    def reward(self):
-        """ If a terminal node, returns the corresponding reward.
-        
-        """
-        
         pass
 
 
@@ -86,17 +71,6 @@ class MCTS():
 
         """
 
-        pass
-
-
-
-
-
-
-
-
-
-
-
-
-
+        reward = node.random_sim()
+        
+        return reward 
