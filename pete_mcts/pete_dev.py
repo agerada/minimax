@@ -43,9 +43,9 @@ def random_sim(node):
             if node == 4:
                 reward = 2
             if node == 5:
-                reward = 1
-            if node == 6:
                 reward = 0
+            if node == 6:
+                reward = 1
 
             return reward
 
@@ -76,4 +76,10 @@ assert mcts.N == {0: 2, 1: 1}
 # from node 2. 
 mcts.run_itt(node=0)
 assert mcts.nodes_and_chldn == {0: [1, 2], 1: [3, 4], 2: [5, 6]}
+
+# On the fourth iteration we should pick the node with the largest 
+# uct value and then rollout from one of its children.
+mcts.run_itt(node=0)
+
+
 
