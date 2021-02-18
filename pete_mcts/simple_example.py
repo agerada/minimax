@@ -3,7 +3,7 @@ from numpy.random import randint
 from MCTS_Class import MCTS
 
 """
-Testing script for MCTS class. Here we play the simple game:
+Here we play the simple game:
 
             0
            / \
@@ -26,6 +26,7 @@ State  Reward
 # Initiate generic MCTS
 mcts = MCTS()
 
+
 # Define simple game
 def find_children(node):
 
@@ -40,6 +41,7 @@ def find_children(node):
 
     return children
 
+
 def random_sim(node):
 
     children = mcts.find_children(node)
@@ -48,7 +50,7 @@ def random_sim(node):
         if children is not None:
             # If there are children, then pick one at random as the
             # new node
-            i = randint(low = len(children))
+            i = randint(low=len(children))
             node = children[i]
             children = mcts.find_children(node)
 
@@ -56,18 +58,20 @@ def random_sim(node):
                 # If no more children then return the leaf node
                 return node
 
+
 def find_reward(node):
 
-            if node == 3:
-                reward = 1
-            if node == 4:
-                reward = 2
-            if node == 5:
-                reward = 0
-            if node == 6:
-                reward = 1
+    if node == 3:
+        reward = 1
+    if node == 4:
+        reward = 2
+    if node == 5:
+        reward = 0
+    if node == 6:
+        reward = 1
 
-            return reward
+    return reward
+
 
 # Assign rules of the game to mcts instance
 mcts.find_children = find_children

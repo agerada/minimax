@@ -2,6 +2,7 @@ import numpy as np
 from abc import abstractmethod
 from numpy.random import randint
 
+
 class MCTS():
 
     """
@@ -22,7 +23,6 @@ class MCTS():
         # Dictionary with node states as keys and rewards below said
         # node as items.
         self.rewards = dict()
-
 
     @abstractmethod
     def find_children(self, node):
@@ -93,7 +93,7 @@ class MCTS():
                 if len(children_not_visited) > 0:
                     # If we have unvisited children, pick one at random
 
-                    i = randint(low = len(children_not_visited))
+                    i = randint(low=len(children_not_visited))
                     node = children_not_visited[i]
                 else:
                     # If we have visited all children, pick the one with
@@ -154,7 +154,6 @@ class MCTS():
         for node in path:
             self.N[node] += 1
             self.rewards[node] += reward
-
 
         if leaf not in self.N:
             # If we haven't seen this leaf node before, add it to

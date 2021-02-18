@@ -26,6 +26,7 @@ State  Reward
 # Initiate generic MCTS
 mcts = MCTS()
 
+
 # Define simple game for testing purposes
 def find_children(node):
 
@@ -40,6 +41,7 @@ def find_children(node):
 
     return children
 
+
 def random_sim(node):
 
     children = mcts.find_children(node)
@@ -48,7 +50,7 @@ def random_sim(node):
         if children is not None:
             # If there are children, then pick one at random as the
             # new node
-            i = randint(low = len(children))
+            i = randint(low=len(children))
             node = children[i]
             children = mcts.find_children(node)
 
@@ -56,23 +58,26 @@ def random_sim(node):
                 # If no more children then return the leaf node
                 return node
 
+
 def find_reward(node):
 
-            if node == 3:
-                reward = 1
-            if node == 4:
-                reward = 2
-            if node == 5:
-                reward = 0
-            if node == 6:
-                reward = 1
+    if node == 3:
+        reward = 1
+    if node == 4:
+        reward = 2
+    if node == 5:
+        reward = 0
+    if node == 6:
+        reward = 1
 
-            return reward
+    return reward
+
 
 # Assign rules of the game to mcts instance
 mcts.find_children = find_children
 mcts.random_sim = random_sim
 mcts.find_reward = find_reward
+
 
 def test_itt1():
 
@@ -82,9 +87,10 @@ def test_itt1():
     # Run first iteration and check that the nodes dictionaries are
     # what we would expect.
     mcts.run_itt(node=0)
-    assert mcts.nodes_and_chldn == dict({0 : [1,2]})
-    assert mcts.N == dict({0 : 1, 4 : 1})
-    assert mcts.rewards == dict({0 : 2, 4 : 2})
+    assert mcts.nodes_and_chldn == dict({0: [1, 2]})
+    assert mcts.N == dict({0: 1, 4: 1})
+    assert mcts.rewards == dict({0: 2, 4: 2})
+
 
 def test_itt2():
     # On the second iteration (with random seed fixed) it should rollout
@@ -101,12 +107,14 @@ def test_itt3():
     mcts.run_itt(node=0)
     assert mcts.nodes_and_chldn == {0: [1, 2], 1: [3, 4], 2: [5, 6]}
 
+
 def test_itt4():
     # On the fourth iteration we should pick the node with the largest
     # uct value and then rollout from one of its children. We are now hitting
     # leaf nodes so the dictionary of visited nodes should remain the same.
     mcts.run_itt(node=0)
     assert mcts.nodes_and_chldn == {0: [1, 2], 1: [3, 4], 2: [5, 6]}
+
 
 def test_monte_calro():
     # Now if we run it lots of times, the expected reward associated with
