@@ -1,9 +1,9 @@
 import numpy as np
 from numpy.random import randint
-from MCTS_Class import MCTS_Base
+from MCTS_Class import MCTS_Base, Node_Base
 
 """
-Testing script for MCTS class. Here we play the simple game:
+Here we play the simple game:
 
             0
            / \
@@ -23,70 +23,80 @@ State  Reward
 
 """
 
+
+class Node(Node_Base):
+
+    def is_terminal(self):
+
+        if self.state == 3:
+            self.terminal = True
+            reward = 1
+        elif self.state == 4:
+            self.terminal = True
+            self.reward = 2
+        elif self.state == 5:
+            self.terminal = True
+            self.reward = 0
+        elif self.state == 6:
+            self.terminal = True
+            self.reward = 1
+        else:
+            self.terminal = False
+
+
+    def find_chld_states(self):
+
+        if self.state == 0:
+            chld_states = [1, 2]
+        if self.state == 1:
+            chld_states = [3, 4]
+        if self.state == 2:
+            chld_states = [5, 6]
+        if self.state in [3, 4, 5, 6]:
+            chld_states = None
+
+        return chld_states
+
 class MCTS(MCTS_Base):
-    """ Define rules of a simple game.
-    """
-
-    def find_children(self, node):
-
-        if node == 0:
-            children = [1, 2]
-        if node == 1:
-            children = [3, 4]
-        if node == 2:
-            children = [5, 6]
-        if node in [3, 4, 5, 6]:
-            children = None
-
-        return children
 
     def random_sim(self, node):
 
-        children = mcts.find_children(node)
-        while children is not None:
+        while node.chld_states is not None:
 
-            if children is not None:
+            if node.chld_states is not None:
                 # If there are children, then pick one at random as the
                 # new node
-                i = randint(low=len(children))
-                node = children[i]
-                children = mcts.find_children(node)
-
-                if children is None:
-                    # If no more children then return the leaf node
+                i = randint(low=len(node.chld_states))
+                node = Node(state=node.chld_states[i])
+                
+                if node.terminal:                    
+                    # Return if terminal node
                     return node
 
-    def find_reward(self, node):
-
-        if node == 3:
-            reward = 1
-        if node == 4:
-            reward = 2
-        if node == 5:
-            reward = 0
-        if node == 6:
-            reward = 1
-
-        return reward
-
-
-# Initiate MCTS instance 
+# Initiate MCTS instance
 mcts = MCTS()
 
 
-def test_itt1():
+## Test first iteration
 
-    # Fix random seed so that we run same test each time
-    np.random.seed(42)
+# Fix random seed so that we run same test each time
+np.random.seed(42)
 
-    # Run first iteration and check that the nodes dictionaries are
-    # what we would expect.
-    mcts.run_itt(node=0)
-    assert mcts.nodes_and_chldn == dict({0: [1, 2]})
-    assert mcts.N == dict({0: 1, 4: 1})
-    assert mcts.rewards == dict({0: 2, 4: 2})
+# Run first iteration and check that the nodes and leaf nodes visited
+# are what we would expect
+node = Node(state=0)
+mcts.run_itt(node)
+assert mcts.visited_nodes[0].state == 0
+assert mcts.visited_nodes[0].N == 1
+assert mcts.visited_nodes[0].Q == 2
+assert mcts.visited_leaf_nodes[0].state == 4
+assert mcts.visited_leaf_nodes[0].N == 1
+assert mcts.visited_leaf_nodes[0].Q == 2
 
+# On the second iteration should roll our from a node on the second layer.
+##mcts.run_itt(node)
 
+'''
 def test_itt2():
     # On the second iteration (with random seed fixed) it should rollout
     # from node 1. This means that nodes 0 and 1 have been visited twice and
@@ -127,3 +137,4 @@ def test_monte_calro():
         mcts.run_itt(node=best_node)
     best_node = mcts.choose_move(node=best_node)
     assert best_node == 4
+'''

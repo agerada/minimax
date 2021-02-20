@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.random import randint
-from MCTS_Class import MCTS_Base
+from MCTS_Class import MCTS, Node_Base
 
 """
 Here we play the simple game:
@@ -24,24 +24,22 @@ State  Reward
 """
 
 
-class MCTS(MCTS_Base):
-    """ Define rules of a simple game.
-    """
+class Node(Node_Base):
 
-    def find_children(self, node):
+    def find_chld_states(self):
 
-        if node == 0:
-            children = [1, 2]
-        if node == 1:
-            children = [3, 4]
-        if node == 2:
-            children = [5, 6]
-        if node in [3, 4, 5, 6]:
-            children = None
+        if self.state == 0:
+            chld_states = [1, 2]
+        if self.state == 1:
+            chld_states = [3, 4]
+        if self.state == 2:
+            chld_states = [5, 6]
+        if self.state in [3, 4, 5, 6]:
+            chld_states = None
 
-        return children
+        return chld_states
 
-    def random_sim(self, node):
+    def random_sim(self):
 
         children = mcts.find_children(node)
         while children is not None:
@@ -57,7 +55,7 @@ class MCTS(MCTS_Base):
                     # If no more children then return the leaf node
                     return node
 
-    def find_reward(self, node):
+    def find_reward(self):
 
         if node == 3:
             reward = 1
@@ -71,9 +69,13 @@ class MCTS(MCTS_Base):
         return reward
 
 
+node = Node(state=0)
+
 # Initiate MCTS instance 
 mcts = MCTS()
 
+
+'''
 # Choice 1
 for i in range(1000):
     mcts.run_itt(node=0)
@@ -85,3 +87,4 @@ for i in range(1000):
     mcts.run_itt(node=best_node)
 best_node = mcts.choose_move(node=best_node)
 print('best second choice = node', best_node)
+'''

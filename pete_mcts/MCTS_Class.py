@@ -1,9 +1,32 @@
 import numpy as np
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from numpy.random import randint
 
+class Node_Base(ABC):
 
-class MCTS_Base():
+    """
+    Description
+    -----------
+
+    """
+
+    def __init__(self, state):
+        self.state = state
+        self.chld_states = self.find_chld_states()
+        self.N = 0
+        self.Q = 0
+        self.is_terminal()
+
+    @abstractmethod
+    def is_terminal(self):
+        pass
+
+    @abstractmethod
+    def find_chld_states(self):
+        pass
+
+
+class MCTS_Base(ABC):
 
     """
     Description
@@ -14,47 +37,11 @@ class MCTS_Base():
 
     def __init__(self):
 
-        # Dictionary with node states as keys and children as items.
-        self.nodes_and_chldn = dict()
-
-        # Dictionary with node states as keys and no. visits as items.
-        self.N = dict()
-
-        # Dictionary with node states as keys and rewards below said
-        # node as items.
-        self.rewards = dict()
-
-    @abstractmethod
-    def find_children(self, node):
-        """
-        Description
-        ------------
-            Finds children of node and returns as a list. Is equal to
-            'None' if the node has no children.
-        """
-
-        pass
+        self.visited_nodes = []
+        self.visited_leaf_nodes = []
 
     @abstractmethod
     def random_sim(self, node):
-        """
-        Description
-        -----------
-            Simulate randomly from current state, node,  to the end
-            of the game. Returns the leaf node where it eventually
-            finishes the game.
-
-        """
-        pass
-
-    @abstractmethod
-    def find_reward(self, node):
-        """
-        Description
-        -----------
-            Returns the reward associated with a leaf node.
-
-        """
         pass
 
     def run_itt(self, node):
@@ -62,10 +49,6 @@ class MCTS_Base():
         Description
         -----------
             Runs a MCTS iteration starting from state defined by node.
-
-        Parameters
-        ----------
-            node : current state
 
         """
 
@@ -76,8 +59,8 @@ class MCTS_Base():
         while True:
             path.append(node)
 
-            # Check to see if we have visited state before
-            visited = node in self.nodes_and_chldn
+            # Check to see if we have visited this state before
+            visited = node in self.visited_nodes
 
             if visited:
                 # If we have visited the node before then either move on to
@@ -113,77 +96,52 @@ class MCTS_Base():
 
             if not visited:
                 # If we haven't visited the node as a parent before then we
-                # its children, add to the dictionary of visited nodes and
-                # perform a rollout. Also add it to the dictionaries that
-                # record no. times visited and rewards.
+                # perform a rollout from this point. We also add this node
+                # to our list of visited nodes.
 
-                children = self.find_children(node)
-
-                self.nodes_and_chldn[node] = children
-                self.N[node] = 0
-                self.rewards[node] = 0
-
-                leaf = self.random_sim(node)
-                reward = self.find_reward(leaf)
-                self.backprop(path, reward, leaf)
+                self.visited_nodes.append(node)
+                leaf_node = self.random_sim(node)
+                self.backprop(path, leaf_node)
 
                 break
 
-    def backprop(self, path, reward, leaf):
+    def backprop(self, path, leaf_node):
         """
         Description
         -----------
-            Takes the result of a rollout and back-propagates it
-            back through the network.
-
-        Parameters
-        ----------
-            path : list of nodes showing the route that we took to
-                the leaf node. Note that it does not include the
-                leaf node itself.
-
-            reward : the reward associated with this particular
-                rollout.
-
-            leaf : the leaf node i.e. where we finally ended up at
-                the end of the game.
 
         """
 
+        reward = leaf_node.reward
+
         # Back propagate the nodes in the path
         for node in path:
-            self.N[node] += 1
-            self.rewards[node] += reward
+            node.N += 1
+            node.Q += reward
 
-        if leaf not in self.N:
+        # See if we have visited this leaf node before
+        visited_leaf_states = []
+        for node in self.visited_leaf_nodes:
+            visited_leaf_states.append(node.state)
+        i = np.where(leaf_node.state == visited_leaf_states)[0]
+
+        if len(i) == 0:
             # If we haven't seen this leaf node before, add it to
-            # the N and rewards dictionaries
-            self.N[leaf] = 0
-            self.rewards[leaf] = 0
-
-        # Update no. times visited and reward for leaf node
-        self.N[leaf] += 1
-        self.rewards[leaf] += reward
+            # visited leaf states
+            leaf_node.N += 1
+            leaf_node.Q += reward
+            self.visited_leaf_nodes.append(leaf_node)
+        else:
+            # Otherwise update statistics of the previously visited
+            # leaf node
+            self.visited_leaf_nodes[i].N += 1
+            self.visited_leaf_nodes[i].Q += reward
 
     def find_uct_values(self, parent, children):
         """
         Description
         -----------
-            Find the utc values associated with a list of children nodes.
-            We use this to help us choose which node to move to next (if
-            all children have already been visited before).
 
-        Parameters
-        ----------
-            parent : parent of all the child nodes that we're considering
-                moving to
-
-            children : list of child nodes
-
-        Returns
-        -------
-            utc : numpy array of utc values associated with each node in
-                children
         """
 
         n_parent = self.N[parent]
@@ -208,17 +166,7 @@ class MCTS_Base():
         """
         Description
         -----------
-            Chooses the next move that would maximise the estimated
-            expected reward.
 
-        Parameters
-        ----------
-            node : current state
-
-        Returns
-        -------
-            best_node : the child node that has the maximum estimated
-                expected reward.
 
         """
 
