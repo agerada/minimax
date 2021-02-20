@@ -3,7 +3,7 @@ from abc import abstractmethod
 from numpy.random import randint
 
 
-class MCTS():
+class MCTS_Base():
 
     """
     Description
