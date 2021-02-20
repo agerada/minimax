@@ -4,7 +4,7 @@ import pickle, sys, os
 
 sys.setrecursionlimit(1000)
 
-ITERATIONS = 50
+ITERATIONS = 1000
 RESET_KNOWLEDGE = False
 
 if RESET_KNOWLEDGE: 
@@ -12,17 +12,17 @@ if RESET_KNOWLEDGE:
     print('Resetting knowledge..')
     knowledge = Knowledge(ITERATIONS, 'X')
 
-if not os.path.exists('knowledge.pkl'): 
+if not os.path.exists('knowledge.pkl') and not RESET_KNOWLEDGE: 
     # generate base knowledge for X
     print('No previous knowledge found, generating base knowledge..')
     knowledge = Knowledge(ITERATIONS, 'X')
-else: 
+elif not RESET_KNOWLEDGE: 
     with open('knowledge.pkl', 'rb') as input_knowledge: 
         print("Loading knowledge from knowledge.pkl..")
         knowledge = pickle.load(input_knowledge)
 
 
-def quick_compare_mcts_minimax(runs = 30, knowledge = knowledge, test_minimax = False): 
+def quick_compare_mcts_minimax(runs = 5, knowledge = knowledge, test_minimax = False): 
     print('MCTS: ')
     print('\t(MCTS is player X)')
     print('\t(Minimax is player O)')

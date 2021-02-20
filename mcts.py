@@ -28,7 +28,7 @@ class Node():
             self.ucb1 = inf
             return self.ucb1
         else: 
-            self.ucb1 = (self.t / self.n) + (2 * sqrt(log(self.parent.n) / self.n))
+            self.ucb1 = (self.t / self.n) + (sqrt(2) * sqrt(log(self.parent.n) / self.n))
             return self.ucb1
 
     def is_terminal_move(self, board): 
@@ -57,6 +57,10 @@ class Knowledge():
             nd = selection(self.root_state)
             expansion(nd, player)
 
+        # create save state (always defaults to root node on creation)
+        # used to efficiently start search
+        self.save_state = self.root_state
+
 def simulation(board, action, current_player): 
     """
     Play out random simulations until terminal state reached
@@ -71,9 +75,9 @@ def simulation(board, action, current_player):
         if sim_winner == current_player: 
             return 1
         elif sim_winner == None: 
-            return 0
+            return 1
         else: 
-            return -1
+            return 0
     
     else: 
         moves = list(actions(board)) # converting to list for random subset
@@ -113,8 +117,8 @@ def expansion(node, current_player):
             temp_t = 1
             node.t += 1
         else: 
-            temp_t = -1
-            node.t += -1
+            temp_t = 0
+            node.t += 0
         node.n += 1
         temp_node = node
         while temp_node.parent: 
@@ -157,7 +161,7 @@ def mcts(board, iterations, knowledge):
         nd = knowledge.root_state
     else: 
         # otherwise find working node by searching through states in tree
-        nd = search_node(board, knowledge.root_state)
+        nd = search_node(board, knowledge.save_state)
         if not nd: 
             raise NotImplementedError # don't know how to deal with unseen moves yet
         for _ in range(iterations): 
@@ -168,11 +172,14 @@ def mcts(board, iterations, knowledge):
     for move in nd.children: 
         if move.is_terminal_move(board): 
             if move.outcome == current_player: 
+                # no need to save state as game is ending
                 return move.action
 
-    # Find action with highest t
-    max_action = max(nd.children, key= lambda x: x.t).action
-    return max_action
+    # Find node with highest t per n
+    max_node = max(nd.children, key= lambda x: x.t / x.n)
+    # save state
+    knowledge.save_state = max_node
+    return max_node.action
 
 def search_node(state, node): 
   if node.resulting_state == state: 
